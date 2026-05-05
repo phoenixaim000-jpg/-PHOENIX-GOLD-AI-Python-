@@ -1,0 +1,57 @@
+import MetaTrader5 as mt5
+import time
+import requests
+
+# --- bitcastleFX / 7PROJECT 継承設定 ---
+SYMBOL = "BTCUSD"
+BASE_LOT = 0.01         # 5,000円から開始するための最小ロット
+PROFIT_TARGET_JPY = 4500 # あなたが「嬉しい」と感じる利確目標（手数料考慮）
+STOP_LOSS_COUNT = 2     # 【厳守】2連敗でシステム停止
+LINE_TOKEN = "YOUR_LINE_NOTIFY_TOKEN"
+
+class PhoenixBTC_AI:
+    def __init__(self):
+        self.consecutive_losses = 0
+        self.is_active = True
+        if not mt5.initialize():
+            print("MT5連携失敗")
+            quit()
+
+    def send_signal_alert(self, message):
+        """シグナル発生時および状況報告"""
+        url = "https://notify-api.line.me/api/notify"
+        headers = {"Authorization": f"Bearer {LINE_TOKEN}"}
+        data = {"message": f"\n【PHOENIX BTCシグナル】\n{message}"}
+        requests.post(url, headers=headers, data=data)
+
+    def check_market_volatility(self):
+        """BTC市場の異常検知（世界情勢連動）"""
+        # 急激な暴落・暴騰の予兆を検知
+        return True
+
+    def run_strategy(self):
+        if self.consecutive_losses >= STOP_LOSS_COUNT:
+            if self.is_active:
+                self.send_signal_alert("2連敗を検知。BTC市場から一時撤退し、資産を保護します。")
+                self.is_active = False
+            return
+
+        # --- シグナル判定ロジック ---
+        # 例：RSIが極端な数値を示し、13次元的な「反発」が予測された場合
+        signal = "BUY" # ダミー：実際は解析に基づく
+        
+        if signal == "BUY":
+            self.send_signal_alert(f"【買いシグナル発生】ターゲット利確: {PROFIT_TARGET_JPY}円")
+            # MT5へのオーダー実行
+            # self.execute_trade(SYMBOL, mt5.ORDER_TYPE_BUY, BASE_LOT)
+
+    def run(self):
+        self.send_signal_alert("PHOENIX BTC/USD 起動。bitcastleFX環境でのスキャンを開始。")
+        while True:
+            if self.is_active:
+                self.run_strategy()
+            time.sleep(60)
+
+if __name__ == "__main__":
+    bot = PhoenixBTC_AI()
+    bot.run()

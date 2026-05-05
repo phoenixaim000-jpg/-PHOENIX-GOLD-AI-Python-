@@ -1,0 +1,63 @@
+import MetaTrader5 as mt5
+import time
+import requests
+
+# --- 設定項目 ---
+SYMBOL = "XAUUSD"
+BASE_LOT = 0.01          # 最小ロット
+MAX_NANPIN_COUNT = 5     # ナンピンの最大回数
+NANPIN_GAP = 2.0         # 何ドル逆行したらナンピンするか (GOLD用)
+STOP_LOSS_COUNT = 2      # 【重要】2連敗で停止
+LINE_TOKEN = "YOUR_LINE_NOTIFY_TOKEN"
+
+class PhoenixGoldAIV2:
+    def __init__(self):
+        self.consecutive_losses = 0
+        self.is_active = True
+        self.current_positions = []
+        if not mt5.initialize():
+            print("MT5連携失敗")
+            quit()
+
+    def send_alert(self, message):
+        """LINEへの戦況報告 """
+        url = "https://notify-api.line.me/api/notify"
+        headers = {"Authorization": f"Bearer {LINE_TOKEN}"}
+        data = {"message": f"\n【PHOENIX 警報】\n{message}"}
+        requests.post(url, headers=headers, data=data)
+
+    def check_safety_lock(self):
+        """2連敗検知時のセーフティガード """
+        if self.consecutive_losses >= STOP_LOSS_COUNT:
+            if self.is_active:
+                self.send_alert("2連敗を検知。資金保護のためシステムを完全停止しました。再起動を待機します。")
+                self.is_active = False
+            return False
+        return True
+
+    def logic_nanpin_order(self):
+        """ナンピン戦略を含む多層エントリ [cite: 2]"""
+        if not self.check_safety_lock():
+            return
+
+        # ここに市場分析（Market Observer）を挿入
+        # 例: 価格が一定以上下がった場合にナンピン買い増しを実行
+        
+        # 疑似コード：トレード結果の判定
+        # if total_trade_result == "Loss":
+        #     self.consecutive_losses += 1
+        #     self.send_alert(f"セット損失確定。連敗数: {self.consecutive_losses}")
+        # elif total_trade_result == "Profit":
+        #     self.consecutive_losses = 0
+        #     self.send_alert("利益確定。世界線は正常です。")
+
+    def run(self):
+        self.send_alert("PHOENIX GOLD V2 (2連敗ストップ仕様) 稼働開始。")
+        while True:
+            if self.is_active:
+                self.logic_nanpin_order()
+            time.sleep(60)
+
+if __name__ == "__main__":
+    bot = PhoenixGoldAIV2()
+    bot.run()

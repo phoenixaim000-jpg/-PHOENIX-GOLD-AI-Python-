@@ -1,0 +1,17 @@
+name: Paper policy tests
+on:
+  push:
+    branches: ["feature/compound-withdrawal-paper"]
+  pull_request:
+    branches: ["main"]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run paper policy tests
+        run: |
+          python -m unittest discover -s tests -p "test_compound_policy.py" -v

@@ -9,6 +9,7 @@
     "automatic_transfer_enabled": false,
     "count_units_from_month_opening_equity": true,
     "require_realized_net_profit": true,
+    "require_flat_account_before_proposal": true,
     "preserve_opening_unit_floor": true,
     "reinvest_when_month_opening_equity_below_one_unit": true
   },

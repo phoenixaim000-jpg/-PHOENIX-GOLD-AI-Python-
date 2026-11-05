@@ -53,3 +53,17 @@ Call `plan_monthly_withdrawal()` only at monthly close using statement-verified 
 6. Obtain explicit manual approval before a separately reviewed, tiny live pilot.
 
 No test or backtest proves future profitability. A stop order may fill at a worse price during gaps or fast markets.
+
+
+## Multi-timeframe market scanner (signal-only)
+The market_regime.py module classifies completed OHLC candles as TREND_UP,
+TREND_DOWN, BREAKOUT_UP, BREAKOUT_DOWN, RANGE, SHOCK, WAIT, or NO_TRADE.
+analyze_multi_timeframe() requires short and higher timeframes to agree.
+scan_market_universe() ranks aligned symbols for review; its priority score
+is only a sorting aid and is not a calibrated probability of profit.
+
+A shock, stale feed, missing candle history, abnormal spread, or unknown broker
+symbol must result in no trade. The input adapter is responsible for checking
+timestamps, sessions, symbol contract details, and complete candles. The
+scanner does not submit orders and does not label any market move as a
+guaranteed bubble or crash.

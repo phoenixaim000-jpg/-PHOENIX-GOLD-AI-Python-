@@ -1,0 +1,36 @@
+{
+  "system_name": "AIM PHOENIX Compound & Withdrawal Guard",
+  "mode": "PAPER_ONLY",
+  "live_trading_enabled": false,
+  "currency": "JPY",
+  "capital_unit_jpy": 150000,
+  "minimum_starting_equity_jpy": 100000,
+  "withdrawal_policy": {
+    "monthly_target_per_unit_jpy": 30000,
+    "withdrawal_eligible_only_if_equity_at_month_end_gte_jpy": 150000,
+    "max_withdrawal_per_unit_per_month_jpy": 30000,
+    "withdrawal_from": "realized_net_profit_only",
+    "preserve_principal_jpy": 150000,
+    "if_below_threshold": "retain_all_net_profit_and_compound",
+    "automatic_withdrawal": false,
+    "user_approval_required": true
+  },
+  "risk": {
+    "risk_per_trade_pct_of_equity": 0.25,
+    "max_total_open_risk_pct": 1.0,
+    "max_daily_loss_pct": 1.0,
+    "max_drawdown_from_high_water_pct": 5.0,
+    "max_consecutive_losses": 2,
+    "max_positions": 1,
+    "martingale": false,
+    "grid": false,
+    "averaging_down": false,
+    "minimum_lot_over_risk_budget": "SKIP_TRADE"
+  },
+  "accounting": {
+    "include_commission_swap_and_fees": true,
+    "unrealized_profit_withdrawable": false,
+    "withdrawal_ledger_required": true,
+    "monthly_close_timezone": "Asia/Tokyo"
+  }
+}

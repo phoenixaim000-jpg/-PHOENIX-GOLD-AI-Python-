@@ -13,3 +13,12 @@ The legacy draft includes averaging and placeholder order logic. This new
 module does not activate or repair those order paths. Integrate its gate and
 validate broker-specific stop/risk calculations before any demo adapter is
 enabled. Live trading and automatic withdrawals remain disabled.
+
+
+## GOLD market filter
+market_regime.py is the reusable VISION-style portion adopted here:
+multi-timeframe trend agreement, range filtering, shock avoidance and candidate
+ranking. PHOENIX GOLD should only consider an XAUUSD candidate when its selected
+fast/slow timeframe data agree. This does not enable a trade or make a market
+prediction certain. No 50x confidence multiplier or automatic averaging logic
+has been copied into this new module.

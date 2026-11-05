@@ -38,6 +38,12 @@ class WithdrawalPlanTests(unittest.TestCase):
         self.assertEqual(plan.withdrawable_jpy, 0)
         self.assertEqual(plan.retained_profit_jpy, 0)
 
+    def test_withdrawal_is_blocked_while_positions_are_open(self):
+        plan = plan_monthly_withdrawal(150_000, 180_000, 30_000, open_positions=1)
+        self.assertEqual(plan.withdrawable_jpy, 0)
+        self.assertEqual(plan.retained_profit_jpy, 30_000)
+        self.assertIn("未決済", plan.reason)
+
     def test_month_opening_units_fix_monthly_cap(self):
         # Crossing 150k during a month does not create a same-month allowance.
         plan = plan_monthly_withdrawal(149_000, 179_000, 30_000)

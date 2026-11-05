@@ -17,7 +17,7 @@ for the separate capital policy.
 - counts net realized JPY P&L after all costs;
 - locks new entries after two consecutive losing closed positions;
 - also locks at the configured daily realized-loss threshold;
-- persists state across restarts and fails closed if the state file is corrupt;
+- persists state across restarts and fails closed if the state file is missing or corrupt; a new state file requires explicit operator initialization;
 - requires an explicit manual reset phrase and review reason.
 
 It does not connect to MetaTrader5, read account history, place/close orders,

@@ -1,0 +1,31 @@
+{
+  "mode": "PAPER_ONLY",
+  "live_trading_enabled": false,
+  "starting_equity_jpy": 100000,
+  "principal_per_unit_jpy": 150000,
+  "monthly_distribution_per_unit_jpy": 30000,
+  "distribution_requires_realized_profit": true,
+  "withdrawal_requires_human_approval": true,
+  "minimum_equity_jpy": 100000,
+  "risk_controls": {
+    "risk_per_trade_pct": 0.25,
+    "max_daily_loss_pct": 1.0,
+    "max_drawdown_pct": 5.0,
+    "max_open_positions": 1,
+    "max_consecutive_losses": 3,
+    "max_trades_per_day": 5,
+    "martingale": false,
+    "grid": false,
+    "averaging_down": false,
+    "force_minimum_lot": false,
+    "require_broker_side_stop_loss": true
+  },
+  "notes": [
+    "Simulation and paper trading only; live execution remains disabled.",
+    "The distribution calculation is a ceiling, not an instruction to withdraw.",
+    "A 150000 JPY principal unit needs 180000 JPY equity before a 30000 JPY distribution, leaving 150000 JPY.",
+    "Six units require 1080000 JPY before a 180000 JPY distribution, leaving 900000 JPY.",
+    "Actual distribution is capped by realized monthly profit and available equity.",
+    "Fees, swaps, taxes, slippage, gaps, and stop execution risk must be accounted for."
+  ]
+}

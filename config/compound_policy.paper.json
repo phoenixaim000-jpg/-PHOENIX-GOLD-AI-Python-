@@ -1,13 +1,22 @@
 {
+  "system_name": "PHOENIX GOLD AI - VISION-inspired Safety Core",
   "mode": "PAPER_ONLY",
   "live_trading_enabled": false,
+  "currency": "JPY",
+  "initial_reference_balance_jpy": 100000,
+  "active_capital_units": 1,
+  "capital_units_are_explicit_and_require_manual_review": true,
+  "instrument_allowlist": ["XAUUSD"],
+  "instrument_symbol_mapping_requires_broker_confirmation": true,
   "capital_policy": {
     "capital_per_unit_jpy": 150000,
     "monthly_payout_cap_per_unit_jpy": 30000,
-    "payout_source": "monthly_realized_net_profit_after_costs",
-    "minimum_post_payout_balance": "capital_units * capital_per_unit_jpy",
+    "payout_source": "cumulative_closed_trade_net_profit_after_commission_swap_and_fees",
+    "minimum_post_payout_balance": "active_capital_units * capital_per_unit_jpy",
+    "below_reserve": "retain_all_realized_profit_in_account_for_compounding",
     "unrealized_profit_can_be_withdrawn": false,
-    "automatic_withdrawal": false
+    "automatic_withdrawal": false,
+    "user_approval_required": true
   },
   "risk_policy": {
     "risk_per_trade_pct": 0.25,
@@ -19,13 +28,25 @@
     "min_reward_risk": 1.5,
     "allow_averaging": false,
     "allow_grid": false,
-    "allow_martingale": false
+    "allow_martingale": false,
+    "skip_if_minimum_lot_exceeds_risk_budget": true,
+    "initial_sl_tp_required": true
   },
-  "initial_reference_balance_jpy": 100000,
+  "vision_features": {
+    "trend_up_down": "ranked_candidate_after_risk_gate",
+    "range": "watch_only_until_separately_validated",
+    "bubble_crash_shock": "block_new_entries",
+    "stale_prices_wide_spread_low_liquidity": "block_new_entries"
+  },
+  "execution": {
+    "mt5_adapter_connected": false,
+    "live_order_placement_enabled": false,
+    "server_side_sl_tp_confirmation_required": true
+  },
   "notes": [
-    "Limits are rules, not profit forecasts.",
-    "A 100000 JPY account has no payout until it reaches its protected 150000 JPY reserve.",
-    "Only realized net profit and balance above reserve can fund a payout.",
-    "Broker contract metadata must be checked before calculating actual order volume."
+    "The 30,000 JPY per unit is a maximum withdrawal cap, not a profit target or guarantee.",
+    "Below the protected reserve, all realized net profit stays in the account for compounding.",
+    "Six configured units protect 900,000 JPY and cap monthly payout at 180,000 JPY; this is not a forecast.",
+    "This configuration does not activate the legacy averaging code."
   ]
 }

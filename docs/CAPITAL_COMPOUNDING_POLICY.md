@@ -16,7 +16,7 @@ The proposed withdrawal is the lowest of:
 2. Positive net realized trading profit for the month, after commissions, swaps/funding and other costs.
 3. Closing equity before withdrawal minus the protected opening unit floor (eligible units × JPY 150,000).
 
-The calculation is a **proposal only**. It never sends a transfer. The user must verify the broker statement, taxes, fees, deposits/withdrawals, and approve any withdrawal manually. Floating/unrealized P&L is not eligible.
+The calculation is a **proposal only**. It never sends a transfer. It returns zero while any positions remain open. Call it only after all positions have been closed and reconciled; use settled broker balance (not floating equity), statement-verified net realized P&L, and exclude new deposits. The user must verify the broker statement, taxes and fees, then approve any withdrawal manually.
 
 Examples:
 - Opening JPY 100,000: 0 units; even if the month is profitable, the allowance is JPY 0 and profits are retained.

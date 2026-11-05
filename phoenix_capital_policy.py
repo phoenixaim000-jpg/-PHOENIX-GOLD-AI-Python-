@@ -46,6 +46,7 @@ class WithdrawalPlan:
     opening_equity_jpy: int
     closing_equity_jpy: int
     net_realized_profit_jpy: int
+    open_positions: int
     eligible_units: int
     protected_floor_jpy: int
     monthly_cap_jpy: int
@@ -64,17 +65,20 @@ def plan_monthly_withdrawal(
     opening_equity_jpy: int,
     closing_equity_jpy: int,
     net_realized_profit_jpy: int,
+    open_positions: int = 0,
     policy: Optional[CapitalPolicy] = None,
 ) -> WithdrawalPlan:
     """Calculate a monthly cap; never initiate an actual bank/broker transfer.
 
     Eligible units are fixed from opening equity. Profit must be realized and
-    net of commission, swap/funding, and other trading costs. Closing equity
-    is measured before the proposed withdrawal and should exclude new deposits.
+    net of commission, swap/funding, and other trading costs. Call this only
+    when all positions are closed; use settled broker balance, not floating
+    equity, and exclude new deposits from the closing-period calculation.
     """
     p = policy or CapitalPolicy()
     _require_non_negative_int("opening_equity_jpy", opening_equity_jpy)
     _require_non_negative_int("closing_equity_jpy", closing_equity_jpy)
+    _require_non_negative_int("open_positions", open_positions)
     if isinstance(net_realized_profit_jpy, bool) or not isinstance(net_realized_profit_jpy, int):
         raise ValueError("net_realized_profit_jpy must be an integer JPY amount")
 
@@ -86,7 +90,11 @@ def plan_monthly_withdrawal(
     withdrawable = min(monthly_cap, surplus, positive_realized_profit)
     retained = max(0, positive_realized_profit - withdrawable)
 
-    if units == 0:
+    if open_positions > 0:
+        withdrawable = 0
+        retained = positive_realized_profit
+        reason = "未決済ポジションが残っているため出金候補を0円にします。全決済後に再計算してください。"
+    elif units == 0:
         reason = "月初証拠金が1口未満のため、出金枠は0円。利益は再投資対象です。"
     elif positive_realized_profit == 0:
         reason = "出金対象となる確定純利益がありません。"
@@ -101,6 +109,7 @@ def plan_monthly_withdrawal(
         opening_equity_jpy=opening_equity_jpy,
         closing_equity_jpy=closing_equity_jpy,
         net_realized_profit_jpy=net_realized_profit_jpy,
+        open_positions=open_positions,
         eligible_units=units,
         protected_floor_jpy=protected_floor,
         monthly_cap_jpy=monthly_cap,

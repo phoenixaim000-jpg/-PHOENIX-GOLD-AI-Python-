@@ -64,6 +64,10 @@ class RiskGateTests(unittest.TestCase):
         self.assertFalse(result.allowed)
         self.assertEqual(result.reason_code, "LIVE_DISABLED")
 
+    def test_accepts_paper_only_config_mode(self):
+        result = evaluate_new_trade(**self.base, mode="PAPER_ONLY")
+        self.assertTrue(result.allowed)
+
     def test_blocks_oversized_trade_risk(self):
         result = evaluate_new_trade(**{**self.base, "proposed_risk_jpy": 251})
         self.assertEqual(result.reason_code, "TRADE_RISK_LIMIT")
@@ -85,6 +89,8 @@ class RiskGateTests(unittest.TestCase):
         martingale = evaluate_new_trade(**self.base, is_martingale_order=True)
         self.assertEqual(averaging.reason_code, "AVERAGING_DISABLED")
         self.assertEqual(martingale.reason_code, "MARTINGALE_DISABLED")
+        grid = evaluate_new_trade(**self.base, is_grid_order=True)
+        self.assertEqual(grid.reason_code, "GRID_DISABLED")
 
     def test_blocks_second_open_position(self):
         result = evaluate_new_trade(**self.base, open_positions=1)

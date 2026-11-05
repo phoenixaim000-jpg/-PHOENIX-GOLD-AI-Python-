@@ -57,3 +57,23 @@ The review branch contains `phoenix_capital_policy.py`, `market_regime.py`, pape
 - Search targets: `MAX_NANPIN_COUNT`, `NANPIN_GAP`, `consecutive_losses`, `is_active`, `signal = "BUY"`, commented `execute_trade`, and MT5 initialization.
 - No live order, deposit, withdrawal, broker login, or external notification was attempted.
 - Existing review-branch GitHub Actions reported 24 passing unit tests for the standalone policy/scanner at its recorded run. This is not evidence that the legacy scripts or a broker adapter are safe.
+
+
+## Related VISION FX AI EA cross-check (separate repository)
+
+The related private repository `phoenixaim000-jpg/VISION-FX-EA-GEMINI` was also inventoried because the brief refers to an existing VISION PHOENIX HTML dashboard. Its `main` tree did **not** contain an HTML file or frontend application at the time of this audit. It contained a README, an MQL5 EA source, Python strategy/risk files, and configuration files. No dashboard HTML was available to preserve or test in that branch.
+
+Additional static findings from the VISION `main` source:
+
+| ID | Severity | File / area | Evidence and impact | Recommended action |
+|---|---|---|---|---|
+| VISION-001 | Critical | `vision_phoenix_ea.py` | `wallet_balance = 25000` / `9000` and an in-memory `positions = []` simulate account state; this is not a broker balance or position ledger. | Replace with read-only broker account/position adapter; never display these values as real funds. |
+| VISION-002 | Critical | `vision_phoenix_ea.py` | Profit is calculated with a hard-coded multiplier `pips_diff * 10000 * lot`; contract size, tick value, account currency, fees, spread and swap are not reconciled. | Remove as a financial ledger; calculate from broker deal history and verified symbol metadata. |
+| VISION-003 | Critical | `trade_logic.py` | `max_leverage = 50`, `leverage_multiplier = 50`, and pseudo-code order paths are present. | Do not copy these settings into GOLD; keep leverage broker-defined and reject unapproved high-risk paths. |
+| VISION-004 | Critical | `trade_logic.py` | The strategy returns `NANPIN_OR_RANGE` and contains code to increase `nanpin_count` up to three times. | Disable averaging/grid; require a fresh risk check for every new position. |
+| VISION-005 | High | `lot_controller.py` | Confidence-based lot multipliers and a minimum lot floor of 0.01 can force volume above a risk budget; a separate controller calculates a minimum 0.01 lot. | Size from stop-loss cash risk and broker contract metadata; if minimum volume exceeds budget, skip. |
+| VISION-006 | High | `VISION_FX_AI_EA.mt5` | Initial `MqlTradeRequest` does not set initial `sl` or `tp`; fixed `InpLotSize` is used; order success does not inspect `result.retcode`. | No live use. Require SL/TP in the initial request and verify retcode, fill, and protection state. |
+| VISION-007 | High | `VISION_FX_AI_EA.mt5` | Entry occurs on a touch of the rolling high/low and is described as a reversal without confirmation; market regime/spread/session filters are absent. | Use completed candles, confirmation, spread/session filters and signal-only validation before demo. |
+| VISION-008 | Medium | `config.py`, `config.json` | Configuration is incomplete or only a static RUNNING/STOP string; no server-side environment or authentication separation exists. | Build explicit server-side PAPER/DEMO/LIVE config; LIVE disabled by default. |
+
+**Dashboard preservation note:** No HTML was found in either PHOENIX GOLD `main` or VISION FX AI EA `main` inventory. If the VISION PHOENIX HTML exists in a different branch, external prototype, or Gemini share, it must be supplied or its exact repository path identified before UI-preserving work can be done. No replacement UI has been invented.

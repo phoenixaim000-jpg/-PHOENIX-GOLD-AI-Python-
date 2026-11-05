@@ -1,0 +1,31 @@
+{
+  "mode": "PAPER_ONLY",
+  "live_trading_enabled": false,
+  "capital_policy": {
+    "capital_per_unit_jpy": 150000,
+    "monthly_payout_cap_per_unit_jpy": 30000,
+    "payout_source": "monthly_realized_net_profit_after_costs",
+    "minimum_post_payout_balance": "capital_units * capital_per_unit_jpy",
+    "unrealized_profit_can_be_withdrawn": false,
+    "automatic_withdrawal": false
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.25,
+    "max_daily_loss_pct": 1.0,
+    "max_drawdown_pct": 5.0,
+    "max_open_positions": 1,
+    "max_trades_per_day": 5,
+    "max_consecutive_losses": 2,
+    "min_reward_risk": 1.5,
+    "allow_averaging": false,
+    "allow_grid": false,
+    "allow_martingale": false
+  },
+  "initial_reference_balance_jpy": 100000,
+  "notes": [
+    "Limits are rules, not profit forecasts.",
+    "A 100000 JPY account has no payout until it reaches its protected 150000 JPY reserve.",
+    "Only realized net profit and balance above reserve can fund a payout.",
+    "Broker contract metadata must be checked before calculating actual order volume."
+  ]
+}

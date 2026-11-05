@@ -19,8 +19,8 @@ class CapitalPolicy:
     max_aggregate_open_risk_bps: int = 100  # 1.00%
     max_open_positions: int = 1
     max_consecutive_losses: int = 2
-    allow_live_trading: bool = False
     allow_averaging: bool = False
+    allow_grid: bool = False
     allow_martingale: bool = False
 
     def __post_init__(self) -> None:
@@ -134,6 +134,7 @@ def evaluate_new_trade(
     mode: str = "PAPER",
     is_averaging_order: bool = False,
     is_martingale_order: bool = False,
+    is_grid_order: bool = False,
     market_data_fresh: bool = True,
     spread_within_limit: bool = True,
     policy: Optional[CapitalPolicy] = None,
@@ -165,10 +166,8 @@ def evaluate_new_trade(
     def deny(code: str, message: str) -> RiskDecision:
         return RiskDecision(False, code, message, max_trade, max_daily, max_dd, max_open)
 
-    if mode.upper() not in {"PAPER", "DEMO"}:
+    if mode.upper() not in {"PAPER", "PAPER_ONLY", "DEMO"}:
         return deny("LIVE_DISABLED", "ライブ口座への新規発注は無効です。PAPER/DEMO検証のみ許可します。")
-    if not p.allow_live_trading and mode.upper() == "LIVE":
-        return deny("LIVE_DISABLED", "ライブ取引は設定で無効です。")
     if equity_jpy <= 0 or day_start_equity_jpy <= 0 or high_water_equity_jpy <= 0:
         return deny("INVALID_EQUITY", "証拠金・日初残高・最高残高のいずれかが0です。")
     if proposed_risk_jpy <= 0:
@@ -179,6 +178,8 @@ def evaluate_new_trade(
         return deny("SPREAD_TOO_WIDE", "スプレッドが上限を超えているため見送ります。")
     if is_averaging_order and not p.allow_averaging:
         return deny("AVERAGING_DISABLED", "ナンピン・買い下がり・売り上がりは禁止です。")
+    if is_grid_order and not p.allow_grid:
+        return deny("GRID_DISABLED", "グリッド注文は禁止です。")
     if is_martingale_order and not p.allow_martingale:
         return deny("MARTINGALE_DISABLED", "マーチンゲール・倍掛けは禁止です。")
     if open_positions >= p.max_open_positions:

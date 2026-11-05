@@ -15,7 +15,9 @@ class PersistentLossGuardTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.path = Path(self.tmp.name) / "guard-state.json"
-        self.guard = PersistentLossGuard(self.path, LossGuardConfig(2, 1500))
+        self.guard = PersistentLossGuard(
+            self.path, LossGuardConfig(2, 1500), initialize_new_state=True
+        )
 
     def tearDown(self):
         self.tmp.cleanup()
@@ -56,6 +58,11 @@ class PersistentLossGuardTests(unittest.TestCase):
         result = self.guard.record_closed_trade("p2", 10, "2026-11-06")
         self.assertEqual(result.daily_net_pnl_jpy, 10)
         self.assertEqual(result.consecutive_losses, 0)
+
+    def test_missing_state_fails_closed(self):
+        self.path.unlink()
+        with self.assertRaises(SafetyStateError):
+            PersistentLossGuard(self.path)
 
     def test_corrupt_state_fails_closed(self):
         self.path.write_text("{broken json", encoding="utf-8")

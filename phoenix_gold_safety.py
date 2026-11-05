@@ -47,11 +47,17 @@ class GuardStatus:
 class PersistentLossGuard:
     """Persist loss streak, daily P&L and lock state; fail closed on bad state."""
 
-    def __init__(self, state_path: str | Path, config: LossGuardConfig | None = None):
+    def __init__(
+        self,
+        state_path: str | Path,
+        config: LossGuardConfig | None = None,
+        *,
+        initialize_new_state: bool = False,
+    ):
         self.state_path = Path(state_path)
         self.config = config or LossGuardConfig()
         self.state_path.parent.mkdir(parents=True, exist_ok=True)
-        self._state = self._load_or_initialize()
+        self._state = self._load_or_initialize(initialize_new_state=initialize_new_state)
 
     def _blank_state(self) -> dict[str, Any]:
         return {
@@ -65,8 +71,13 @@ class PersistentLossGuard:
             "last_reset_reason": "",
         }
 
-    def _load_or_initialize(self) -> dict[str, Any]:
+    def _load_or_initialize(self, *, initialize_new_state: bool) -> dict[str, Any]:
         if not self.state_path.exists():
+            if not initialize_new_state:
+                raise SafetyStateError(
+                    "Loss-guard state file is missing; entries must remain disabled. "
+                    "Initialize only after an operator has verified the account and history."
+                )
             state = self._blank_state()
             self._save(state)
             return state

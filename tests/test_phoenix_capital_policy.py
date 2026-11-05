@@ -73,7 +73,7 @@ class RiskGateTests(unittest.TestCase):
         self.assertEqual(result.reason_code, "DAILY_LOSS_LIMIT")
 
     def test_blocks_drawdown_limit(self):
-        result = evaluate_new_trade(**{**self.base, "equity_jpy": 95_000})
+        result = evaluate_new_trade(**{**self.base, "equity_jpy": 190_000, "high_water_equity_jpy": 200_000})
         self.assertEqual(result.reason_code, "DRAWDOWN_LIMIT")
 
     def test_blocks_two_consecutive_losses(self):

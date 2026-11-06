@@ -1,0 +1,42 @@
+{
+  "name": "AIM PHOENIX Capital Compounding Policy",
+  "mode": "PAPER_ONLY",
+  "currency": "JPY",
+  "capital_unit_jpy": 150000,
+  "monthly_allowance_per_unit_jpy": 30000,
+  "withdrawal": {
+    "calculate_only": true,
+    "automatic_transfer_enabled": false,
+    "count_units_from_month_opening_equity": true,
+    "require_realized_net_profit": true,
+    "require_flat_account_before_proposal": true,
+    "preserve_opening_unit_floor": true,
+    "reinvest_when_month_opening_equity_below_one_unit": true
+  },
+  "risk": {
+    "risk_per_trade_bps": 25,
+    "max_daily_loss_bps": 100,
+    "max_drawdown_bps": 500,
+    "max_aggregate_open_risk_bps": 100,
+    "max_open_positions": 1,
+    "max_consecutive_losses": 2,
+    "averaging_enabled": false,
+    "grid_enabled": false,
+    "martingale_enabled": false,
+    "confidence_based_lot_multiplier_enabled": false
+  },
+  "execution": {
+    "live_trading_enabled": false,
+    "require_broker_side_stop_loss": true,
+    "require_broker_side_take_profit": true,
+    "reject_order_when_minimum_lot_exceeds_risk_budget": true,
+    "require_manual_approval_before_any_live_use": true
+  },
+  "notes": [
+    "Monthly allowance is a ceiling, not a guaranteed income or profit target.",
+    "Net realized profit must be after commissions, swaps or funding, and other costs.",
+    "Opening equity fixes eligible units for the month; mid-month growth does not increase that month's allowance.",
+    "No withdrawal is permitted unless post-withdrawal equity remains at or above the opening capital-unit floor.",
+    "PAPER_ONLY is the only enabled execution mode in this configuration."
+  ]
+}

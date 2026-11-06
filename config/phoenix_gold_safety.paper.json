@@ -1,0 +1,26 @@
+{
+  "mode": "PAPER_ONLY",
+  "symbol": "XAUUSD",
+  "loss_guard": {
+    "max_consecutive_closed_position_losses": 2,
+    "max_daily_realized_loss_jpy": 1500,
+    "persist_state_across_restart": true,
+    "corrupt_state_action": "BLOCK_NEW_ENTRIES",
+    "manual_reset_required": true,
+    "averaging_enabled": false,
+    "grid_enabled": false,
+    "martingale_enabled": false
+  },
+  "execution": {
+    "order_submission_enabled": false,
+    "live_trading_enabled": false,
+    "broker_connection_enabled": false,
+    "automatic_restart_after_lock": false
+  },
+  "notes": [
+    "This configuration is a policy specification; it is not connected to an MT5 order adapter.",
+    "The loss guard counts fully closed positions after broker history reconciliation, not partial deal fragments.",
+    "Net P&L must include commission, swap, fees and JPY conversion.",
+    "A safety lock requires an explicit manual review before reset."
+  ]
+}

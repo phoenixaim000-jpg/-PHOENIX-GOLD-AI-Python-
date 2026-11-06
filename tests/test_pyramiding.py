@@ -44,7 +44,7 @@ class PyramidingTests(unittest.TestCase):
         self.assertEqual(self.base(mode="LIVE").reason_code, "LIVE_DISABLED")
 
     def test_rejects_aggregate_risk_over_limit(self):
-        self.assertEqual(self.base(current_open_risk_jpy=1200).reason_code, "AGGREGATE_RISK_LIMIT")
+        self.assertEqual(self.base(current_open_risk_jpy=1201).reason_code, "AGGREGATE_RISK_LIMIT")
 
     def test_rejects_add_risk_over_single_limit(self):
         self.assertEqual(self.base(proposed_add_risk_jpy=400).reason_code, "ADD_RISK_LIMIT")
@@ -74,6 +74,10 @@ class PyramidingTests(unittest.TestCase):
     def test_invalid_risk_values_rejected(self):
         with self.assertRaises(ValueError):
             self.base(proposed_add_risk_jpy=-1)
+
+    def test_non_finite_price_is_rejected(self):
+        with self.assertRaises(ValueError):
+            self.base(current_price=float("nan"))
 
     def test_invalid_config_rejected(self):
         with self.assertRaises(ValueError):

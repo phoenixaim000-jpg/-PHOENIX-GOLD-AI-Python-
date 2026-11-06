@@ -8,6 +8,7 @@ calculated by a broker-aware adapter and include fees, slippage and JPY FX.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from math import isfinite
 
 
 @dataclass(frozen=True)
@@ -20,7 +21,7 @@ class PyramidingConfig:
     def __post_init__(self) -> None:
         if self.max_additions < 0:
             raise ValueError("max_additions must be >= 0")
-        if self.add_step_atr <= 0:
+        if not isfinite(self.add_step_atr) or self.add_step_atr <= 0:
             raise ValueError("add_step_atr must be > 0")
         if not 1 <= self.max_single_add_risk_bps <= self.max_aggregate_open_risk_bps <= 10_000:
             raise ValueError("risk limits must satisfy 1 <= single <= aggregate <= 10000")
@@ -65,8 +66,8 @@ def evaluate_pyramid_add(
         "atr": atr,
     }
     for name, value in numeric.items():
-        if isinstance(value, bool) or not isinstance(value, (int, float)):
-            raise ValueError(f"{name} must be numeric")
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or not isfinite(value):
+            raise ValueError(f"{name} must be a finite number")
     if any(value <= 0 for value in numeric.values()):
         raise ValueError("prices and ATR must be greater than zero")
 

@@ -40,3 +40,14 @@ python -m unittest discover -s tests -v
 - No averaging, grid, martingale, or automatic restart after a lock.
 - Never store MT5 passwords, API tokens, or account credentials in this repo.
 - A stop-loss can slip or gap; no program can guarantee zero loss.
+
+
+## Pyramiding policy (PAPER/DEMO only)
+
+`pyramiding.py` evaluates add-ons only after price moves favorably from the
+existing profitable position. It requires a fresh market feed, confirmed
+stop-loss protection, a minimum 1 ATR favorable step, no more than 2 add-ons,
+and risk limits of 0.25% per add-on / 1.00% aggregate open risk by default.
+It rejects LIVE mode and never submits orders. See
+[docs/PYRAMIDING_POLICY.md](docs/PYRAMIDING_POLICY.md). The broker adapter
+must calculate accurate JPY risk and verify stops before any future integration.

@@ -1,0 +1,5 @@
+my-mt5-risk-manager/   # 新規作成するGitHubリポジトリ名
+├── .env             # 口座番号やパスワードなどの機密情報（※絶対にGitHubにアップロードしない！）
+├── .gitignore       # 秘匿情報やログを除外する設定ファイル
+├── requirements.txt # 必要なライブラリ一覧（MetaTrader5など）
+└── risk_manager.py  # 先ほどのPython損失制御プログラム

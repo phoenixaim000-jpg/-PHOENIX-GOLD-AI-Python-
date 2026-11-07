@@ -1,0 +1,4 @@
+C:\Users\YourName\Documents\mt5_bot\   <-- このフォルダを新しく作成する
+ ┣ 📜 risk_manager.py                 <-- ご提示いただいたPythonコードをここに保存する
+ ┣ 📄 .env                            <-- 必要に応じて口座情報などを書くファイル（任意）
+ ┗ 📄 requirements.txt                <-- 使用ライブラリを書くファイル（任意）

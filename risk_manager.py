@@ -95,3 +95,6 @@ try:
 except KeyboardInterrupt:
   print("プログラムを終了します。")
   mt5.shutdown()
+
+python risk_manager.py
+

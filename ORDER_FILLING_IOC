@@ -1,0 +1,140 @@
+# -*- coding: utf-8 -*-
+"""
+PHOENIX VISION FX EA - MT5 High-Speed Exchange & Trade Controller
+Author: 天野浩友 (AIM PHOENIX)
+Description: 
+  MetaTrader 5 (MT5) と連携し、動的証拠金管理、高速両替、および
+  ゴールド/暗号通貨の高速トレード執行を自動制御するPythonサンプルスクリプト。
+"""
+
+import MetaTrader5 as mt5
+import time
+import logging
+
+# ロギングの設定
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s'
+)
+
+class PhoenixVisionController:
+    def __init__(self, login: int, server: str, password: str):
+        self.login = login
+        self.server = server
+        self.password = password
+        
+    def initialize(self):
+        """MT5ターミナルへの接続初期化"""
+        if not mt5.initialize():
+            logging.error(f"MT5初期化失敗, エラーコード: {mt5.last_error()}")
+            return False
+        
+        # 口座ログイン
+        authorized = mt5.login(self.login, password=self.password, server=self.server)
+        if not authorized:
+            logging.error(f"MT5ログイン失敗, エラーコード: {mt5.last_error()}")
+            mt5.shutdown()
+            return False
+            
+        logging.info(f"MT5接続成功: ログインID {self.login} (サーバー: {self.server})")
+        return True
+
+    def get_dynamic_margin(self):
+        """動的証拠金および口座情報の取得"""
+        account_info = mt5.account_info()
+        if account_info is None:
+            logging.error(f"口座情報の取得に失敗しました: {mt5.last_error()}")
+            return None
+            
+        return {
+            "balance": account_info.balance,
+            "equity": account_info.equity,
+            "margin": account_info.margin,
+            "margin_free": account_info.margin_free,
+            "margin_level": account_info.margin_level,
+            "profit": account_info.profit
+        }
+
+    def execute_high_speed_trade(self, symbol: str, lot: float, order_type: str):
+        """高速トレード執行 (BUY / SELL)"""
+        point = mt5.symbol_info(symbol).point
+        price = mt5.symbol_info_tick(symbol).ask if order_type == "BUY" else mt5.symbol_info_tick(symbol).bid
+        
+        action_type = mt5.TRADE_ACTION_DEAL
+        trade_type = mt5.ORDER_TYPE_BUY if order_type == "BUY" else mt5.ORDER_TYPE_SELL
+        
+        request = {
+            "action": action_type,
+            "symbol": symbol,
+            "volume": lot,
+            "type": trade_type,
+            "price": price,
+            "deviation": 20,
+            "magic": 20261113,
+            "comment": "PHOENIX VISION FX High-Speed EA",
+            "type_time": mt5.ORDER_TIME_GTC,
+            "type_filling": mt5.ORDER_FILLING_IOC,
+        }
+        
+        result = mt5.order_send(request)
+        if result.retcode != mt5.TRADE_RETCODE_DONE:
+            logging.error(f"注文失敗 [{symbol}]: retcode={result.retcode}")
+            return None
+        
+        logging.info(f"高速注文成功 [{symbol}]: 注文ID={result.order}, 価格={price}, ロット={lot}")
+        return result
+
+    def execute_dynamic_exchange(self, from_currency: str, to_currency: str, amount: float):
+        """
+        高速両替・アセット間ブリッジロジック
+        """
+        logging.info(f"高速両替実行: {amount} [{from_currency}] -> [{to_currency}]")
+        time.sleep(0.01) # 高速処理の擬似ウェイト
+        return True
+
+    def shutdown(self):
+        mt5.shutdown()
+        logging.info("MT5接続を切断しました。")
+
+if __name__ == "__main__":
+    MT5_LOGIN = 12345678
+    MT5_SERVER = "Broker-Demo"
+    MT5_PASSWORD = "your_secure_password"
+    
+    controller = PhoenixVisionController(login=MT5_LOGIN, server=MT5_SERVER, password=MT5_PASSWORD)
+    
+    if controller.initialize():
+        margin_status = controller.get_dynamic_margin()
+        if margin_status:
+            logging.info(f"現在の口座証拠金状況: {margin_status}")
+            
+        controller.shutdown()
+
+SKILL.md
+---
+name: phoenix-system-guardian
+description: サイバー攻撃や不正改ざん検知時の即時企業・個人連携、自動請求書作成、未修正箇所のトラッキング、およびAI投資（PHOENIX VISION FX、新NISA、iDeCo、暗号通貨、MT5高速両替・高速トレード・株配当）の分散投資・利益追求ロジックの最適化と自動法人設立・資金調達を担う統合スキル。
+---
+
+# Phoenix System Guardian & Multi-Asset Profit Engine
+
+このスキルは、システム（Webアプリ、EA、Web3プラットフォーム等）のセキュリティインシデント発生時の迅速な修復・請求プロセスと、複数資産（FX、暗号通貨、新NISA、iDeCo、株式配当）を連動させた動的証拠金・高速トレード・分散投資の自動最適化を統合実行します。
+
+## 1. セキュリティ検知・改ざん時の即時対応ワークフロー
+- **欠落・改ざん箇所の特定**: 予期せぬ改ざんやサイバーネットハッキングの兆候を検知した際、直ちに「何が足りないか（機能、プログラム、サービス、見た目）」を自動診断。
+- **企業・個人間の即時連絡と請求書自動作成**: 変更前後の差分を明確にし、修正済み箇所と未修正箇所をリスト化したレポートと給料・報酬請求書を即座に作成。
+- **他AIへの共有**: 解析したログや対応プロトコルを他のAIエージェント（Claude, ChatGPT等）へ引き渡すための統一フォーマットで出力。
+
+## 2. 自動法人設立・投資家連携スキーム（会社不在時のフォールバック）
+- **会社組織の自動構築**: 対象プロジェクトに適切な法人格（株式会社、合同会社、またはフリーランスの独自機密開発体制）の設立手続きフローを自動生成。
+- **秘密・リソース共有と資金調達**: 必要人員の把握、秘密保持（NDA）の範囲設計、および投資家に向けたピッチ資料・インセンティブ設計を自動化。
+
+## 3. PHOENIX VISION FX EA ＆ 総合資産進化ロジック
+- **動的証拠金ロジック**: MT5および暗号通貨ウォレット間で証拠金がリアルタイムに流動・連動する高速両替・高速トレード基盤を構築。
+- **ポートフォリオの分散と利益追求**: 
+  - **FX / 暗号通貨**: 超高速トレードと裁定取引によるアクティブ収益。
+  - **新NISA / iDeCo**: 税制優遇を最大化したAI主導のインデックス・投資信託運用。
+  - **株式配当**: キャッシュフローの安定化を図る高配当株の自動分散。
+- **利益最大化**: リスク管理（ドローダウン制限）を維持しつつ、各セクター間の自動リバランスを実行。
+
+

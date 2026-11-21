@@ -1,0 +1,1 @@
+python deploy_to_phoenix_gold_ai.py --repo-url https://github.com/<YOUR_USER>/PHOENIX-GOLD-AI-Python.git --dry-run
